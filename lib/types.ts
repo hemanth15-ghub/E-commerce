@@ -7,6 +7,7 @@ export interface Product {
   image: string;
   category: string;
   inStock: boolean;
+  rating?: number;       // ⭐ Add optional rating
   createdAt?: Date;
   updatedAt?: Date;
 }
@@ -48,4 +49,5 @@ export interface ProductFormData {
   image: string;
   category: string;
   inStock: boolean;
+  rating?: number; // optional for new products
 }

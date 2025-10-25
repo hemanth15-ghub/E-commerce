@@ -4,9 +4,10 @@ import Link from 'next/link';
 import { Product } from '@/lib/types';
 import { useCart } from '@/context/CartContext';
 import Button from '@/components/ui/Button';
+import toast from 'react-hot-toast'; // ✅ import toast
 
 interface ProductCardProps {
-  product: Product;
+  product: Product & { rating?: number };
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
@@ -14,12 +15,12 @@ export default function ProductCard({ product }: ProductCardProps) {
 
   const handleAddToCart = () => {
     addItem(product);
-    // You can add toast notification here
+    toast.success(`${product.name} added to cart!`); // ✅ show toast
   };
 
   return (
-    <div className="product-card">
-      <Link href={`/product/₹{product.id}`}>
+    <div className="product-card relative border rounded-lg overflow-hidden shadow hover:shadow-lg transition-shadow duration-200">
+      <Link href={`/product/${product.id}`} className="block">
         <div className="aspect-square relative overflow-hidden cursor-pointer">
           <Image
             src={product.image}
@@ -34,18 +35,33 @@ export default function ProductCard({ product }: ProductCardProps) {
           )}
         </div>
       </Link>
-      
+
       <div className="p-4">
-        <Link href={`/product/${product.id}`}>
+        <Link href={`/product/${product.id}`} className="block">
           <h3 className="font-semibold text-lg mb-2 hover:text-primary-600 transition-colors cursor-pointer">
             {product.name}
           </h3>
         </Link>
-        
+
         <p className="text-gray-600 text-sm mb-3 line-clamp-2">
           {product.description}
         </p>
-        
+
+        {/* Rating stars (if exists) */}
+        {product.rating !== undefined && (
+          <div className="flex items-center mb-3">
+            {Array.from({ length: 5 }, (_, i) => (
+              <span
+                key={i}
+                className={`${i < Math.round(product.rating || 0) ? 'text-yellow-400' : 'text-gray-300'}`}
+              >
+                ★
+              </span>
+            ))}
+            <span className="ml-2 text-gray-600 text-sm">{product.rating}</span>
+          </div>
+        )}
+
         <div className="flex items-center justify-between mb-3">
           <span className="text-2xl font-bold text-gray-900">
             ₹{product.price.toFixed(2)}
@@ -54,7 +70,7 @@ export default function ProductCard({ product }: ProductCardProps) {
             {product.category}
           </span>
         </div>
-        
+
         <Button
           onClick={handleAddToCart}
           disabled={!product.inStock}
